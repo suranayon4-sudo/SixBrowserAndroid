@@ -27,41 +27,6 @@ jobs:
           mkdir -p project
           unzip -o SixBrowserAndroid-GitHubReady.zip -d project
 
-      - name: Fix Java and Kotlin JVM target
-        working-directory: project
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-
-          p = Path("app/build.gradle.kts")
-          s = p.read_text()
-
-          if "compileOptions" not in s:
-              s = s.replace(
-                  "android {",
-                  """android {
-              compileOptions {
-                  sourceCompatibility = JavaVersion.VERSION_17
-                  targetCompatibility = JavaVersion.VERSION_17
-              }
-          """
-              )
-
-          if "kotlinOptions" not in s:
-              s = s.replace(
-                  "\n}",
-                  """
-          
-          kotlinOptions {
-              jvmTarget = "17"
-          }
-          """,
-                  1
-              )
-
-          p.write_text(s)
-          PY
-
       - name: Build APK
         working-directory: project
         run: |
