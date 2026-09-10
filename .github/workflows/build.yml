@@ -27,6 +27,37 @@ jobs:
           mkdir -p project
           unzip -o SixBrowserAndroid-GitHubReady.zip -d project
 
+      - name: Fix JVM target
+        working-directory: project
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("app/build.gradle.kts")
+          s = p.read_text()
+
+          s = s.replace(
+              'sourceCompatibility = JavaVersion.VERSION_1_8',
+              'sourceCompatibility = JavaVersion.VERSION_17'
+          )
+
+          s = s.replace(
+              'targetCompatibility = JavaVersion.VERSION_1_8',
+              'targetCompatibility = JavaVersion.VERSION_17'
+          )
+
+          s = s.replace(
+              'jvmTarget = "1.8"',
+              'jvmTarget = "17"'
+          )
+
+          p.write_text(s)
+          print("JVM target diperbaiki ke Java 17")
+
+          print("--- build.gradle.kts ---")
+          print(p.read_text())
+          PY
+
       - name: Build APK
         working-directory: project
         run: |
